@@ -4,30 +4,38 @@
 import sys
 import DaVinciResolveScript as bmd
 
-resolve = bmd.scriptapp('Resolve')
-mediaStorage = resolve.GetMediaStorage()
-projectManager = resolve.GetProjectManager()
-proj = projectManager.GetCurrentProject()
-mediaPool = proj.GetMediaPool()
-folder = mediaPool.GetCurrentFolder()
-tl = proj.GetCurrentTimeline()
-videoTrackCount = tl.GetTrackCount('video')
-mediaPoolClips = []
-timelineItems = []
+def get_flaged_clip(folder):
+    for clip in folder.GetClipList():
+        if clip.GetClipProperty()['Flags'] == 'Cream':
+            return clip
 
-for clip in folder.GetClipList():
-    if clip.GetClipProperty()['Flags'] == 'Cream':
-        mediaPoolClips.append(clip)
-        
-if not len(mediaPoolClips):
-    print('No Clips found.\nPlease add flag "Cream" to the desire clip.')
-    sys.exit()
+def main():
+    resolve = bmd.scriptapp('Resolve')
+    projectManager = resolve.GetProjectManager()
+    proj = projectManager.GetCurrentProject()
+    mediaPool = proj.GetMediaPool()
+    folder = mediaPool.GetCurrentFolder()
+    tl = proj.GetCurrentTimeline()
+    videoTrackCount = tl.GetTrackCount('video')
+    timelineItems = []
+    sourceClip = get_flaged_clip(folder)
+    if sourceClip == None:
+        print('No clips flaged')
+        sys.exit()
 
-for trackNumber in range(videoTrackCount):
-    timelineItems.extend(tl.GetItemListInTrack('video', trackNumber+1))
+    for trackNumber in range(videoTrackCount):
+        timelineItems.extend(tl.GetItemListInTrack('video', trackNumber+1))
 
-for clip in mediaPoolClips:
     for item in timelineItems:
-        if item.GetMediaPoolItem() == clip:
+        if item.GetName() == sourceClip.GetName():
             print(item.GetName())
-            item.SetClipColor("Cream")
+            print(tl.GetStartFrame())
+            recordFrame = item.GetStart()
+            print(recordFrame)
+            tl.AddMarker(90000, 'Cream', 'Found One', '', 1, '')
+
+    projectManager.SaveProject()
+
+
+if __name__ == "__main__":
+    main()
