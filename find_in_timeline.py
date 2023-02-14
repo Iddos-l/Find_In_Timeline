@@ -20,16 +20,14 @@ for clip in folder.GetClipList():
         mediaPoolClips.append(clip)
         
 if not len(mediaPoolClips):
-    print('No Clips found.\nPlease add flag "Cream" to the desire clips.')
+    print('No Clips found.\nPlease add flag "Cream" to the desire clip.')
     sys.exit()
 
+for trackNumber in range(videoTrackCount):
+    timelineItems.extend(tl.GetItemListInTrack('video', trackNumber+1))
+
 for clip in mediaPoolClips:
-    print(clip.GetMediaId())
-
-
-timelineItems.append(tl.GetItemListInTrack('video', 1))
-print(timelineItems[0][0].GetName())
-# for trackNumber in range(videoTrackCount):
-#     timelineItems.append(tl.GetItemListInTrack('video', trackNumber))
-
-# print(len(timelineItems))
+    for item in timelineItems:
+        if item.GetMediaPoolItem() == clip:
+            print(item.GetName())
+            item.SetClipColor("Cream")
