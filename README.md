@@ -1,6 +1,6 @@
 # Find_In_Timeline
 
-This script searches for a flagged clip in the Media Pool active bin and adds a marker to the timeline for each occurrence of the clip.
+This script searches for a flagged clip in the Media Pool active bin and adds a marker to the active timeline for each occurrence of the clip.
 
 The clip must have a 'Cream' flag set in order to be recognized by the script.
 
